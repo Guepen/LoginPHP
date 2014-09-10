@@ -1,16 +1,15 @@
 <?php
 
-namespace view;
 class HTMLView {
 
     /**
-     * @param $body HTMLcode
+     * @param $body HTML-code
      * @throws \Exception if $body is null
      */
     Public function echoHTML($body){
-        if($body == NULL){
+       if($body == NULL){
             throw new \Exception("Body is null");
-        }
+       }
 
         echo "
 				<!DOCTYPE html>

@@ -1,10 +1,19 @@
 <?php
 
-namespace view;
+require_once("HTMLView.php");
+
 class LoginView{
 
+    private $username;
+    private $password;
+    private $htmlView;
+
+    public function __construct(){
+        $this->htmlView = new HTMLView();
+    }
+
     /**
-     * @return string with htmlcode
+     * @return string with html-code
      */
     public function showLoginpage(){
         $html = "<h1>Laborationskod th222fa<h1/>
@@ -14,10 +23,10 @@ class LoginView{
 
 					<legend>Type in username and password</legend>
 					<label for=username>Username: </label>
-					<input type=text size=20>
+					<input name='username' type=text size=20>
 					<label for=username>Password: </label>
-					<input type=password size=20>
-					<input type='submit' value='Login'>
+					<input name='password' type=password size=20>
+					<input name='submit' type='submit' value='Login'>
 
 				</fieldset>
 			</form>
@@ -26,5 +35,37 @@ class LoginView{
 
     return $html;
 }
+
+    /**
+     * @return string with html-code
+     */
+    public function showLoggedInPage(){
+        $html = "<h1>Laborationskod th222fa<h1/>
+            <H3>Logged In :)</H3>
+           <a href='?logOut'>sign out</a>
+    ";
+
+        return $html;
+    }
+
+
+    public function getAuthentication(){
+         $this->username = $_POST['username'];
+         $this->password = $_POST['password'];
+    }
+
+    /**
+     * @return username
+     */
+    public function getUsername(){
+        return $this->username;
+    }
+
+    /**
+     * @return password
+     */
+    public function getPassword(){
+        return $this->password;
+    }
 
 }
