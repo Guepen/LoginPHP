@@ -16,6 +16,7 @@ class LoginView{
      * @return string with html-code
      */
     public function showLoginpage(){
+
         $html = "<h1>Laborationskod th222fa<h1/>
             <H3>Not logged in</H3>
             <form action=?login method=post enctype=multipart/form-data>
@@ -33,8 +34,8 @@ class LoginView{
 
     ";
 
-    return $html;
-}
+        return $html;
+    }
 
     /**
      * @return string with html-code
@@ -50,8 +51,8 @@ class LoginView{
 
 
     public function getAuthentication(){
-         $this->username = $_POST['username'];
-         $this->password = $_POST['password'];
+        $this->username = $_POST['username'];
+        $this->password = $_POST['password'];
     }
 
     /**
