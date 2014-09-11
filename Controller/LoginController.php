@@ -20,20 +20,28 @@ class LoginController{
      */
     public function renderHtml(){
 
+        if(isset($_SESSION['loggedIn'])){
+            return $this->view->showLoggedInPage();
+        }
+
         if(isset($_POST['submit'])){
             $this->view->getAuthentication();
             $this->getUsername();
             $this->getPassword();
+
             if($this->model->checkAuthentication($this->username, $this->password)){
                 return $this->view->showLoggedInPage();
 
             }
 
         }
+
         else{
             return $this->view->showLoginpage();
         }
+
     }
+
 
     public function getUsername(){
         $this->username = $this->view->getUsername();

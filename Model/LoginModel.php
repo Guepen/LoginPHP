@@ -13,6 +13,10 @@ class LoginModel{
      */
     public function checkAuthentication($username, $password){
         if($username == $this->username && $password == $this->password){
+           if(isset($_SESSION['loggedIn'])== false){
+                $_SESSION['loggedIn'] = $_POST['username'];
+            }
+
             return true;
 
         }
@@ -20,8 +24,5 @@ class LoginModel{
         return false;
 
     }
-
-
-
 
 }

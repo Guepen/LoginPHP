@@ -10,6 +10,7 @@ $htmlView = new HTMLView();
 
 $loginView = new LoginView();
 $loginController = new LoginController();
+$loginView->logOut();
 $body = $loginController->renderHtml();
 $htmlView->echoHTML($body);
 

@@ -7,6 +7,7 @@ class LoginView{
     private $username;
     private $password;
     private $htmlView;
+    private $location = 'logOut';
 
     public function __construct(){
         $this->htmlView = new HTMLView();
@@ -43,10 +44,16 @@ class LoginView{
     public function showLoggedInPage(){
         $html = "<h1>Laborationskod th222fa<h1/>
             <H3>Logged In :)</H3>
-           <a href='?logOut'>sign out</a>
+           <a name='logOut' href='?logOut'>sign out</a>
     ";
 
         return $html;
+    }
+
+    public function logOut(){
+        if(isset($_GET[$this->location])){
+            session_unset('loggedIn');
+        }
     }
 
 
