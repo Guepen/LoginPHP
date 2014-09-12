@@ -30,8 +30,14 @@ class LoginController{
             $this->getPassword();
 
             if($this->model->checkAuthentication($this->username, $this->password)){
+                $this->view->successfullLogin();
                 return $this->view->showLoggedInPage();
 
+
+            }
+            else{
+                $this->setMessage();
+                return $this->view->showLoginpage();
             }
 
         }
@@ -40,6 +46,11 @@ class LoginController{
             return $this->view->showLoginpage();
         }
 
+
+    }
+
+    public function setMessage(){
+        $this->view->setMessage($this->model->getMessage());
     }
 
 

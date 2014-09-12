@@ -2,6 +2,8 @@
 
 class HTMLView {
 
+    private $message;
+
     /**
      * @param $body HTML-code
      * @throws \Exception if $body is null
@@ -11,7 +13,7 @@ class HTMLView {
             throw new \Exception("Body is null");
         }
         setlocale(LC_TIME, "sve");
-        $day = strftime("%A, den %#d %B %Y. Klockan är [%X]");
+        $date = strftime("%A, den %#d %B %Y. Klockan är [%X]");
 
         echo "
 				<!DOCTYPE html>
@@ -21,9 +23,13 @@ class HTMLView {
 				</head>
 				<body>
 					$body
-                    $day
+                    <p>$date</p>
 				</body>
 				</html>";
+
+    }
+
+    public function getMessage(){
 
     }
 }
