@@ -6,9 +6,6 @@ require_once('Controller/LoginController.php');
 
 session_start();
 
-$htmlView = new HTMLView();
-
-$loginView = new LoginView();
 $loginController = new LoginController();
 $loginController->doControl();
 

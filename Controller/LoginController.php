@@ -22,34 +22,66 @@ class LoginController{
      *Call controlfunctions
      */
     public function doControl(){
-
         $this->doLogOut();
         $this->isLoggedIn();
+        $this->doLogInCookie();
         $this->doLogIn();
+
+
+
+    }
+
+    public function doLogInCookie(){
+
+        if (!$this->model->isLoggedIn() && !$this->view->didUserPressLogOut() && !$this->view->didUserPressLogin()) {
+            $this->view->loadCookie();
+            $this->setUsername();
+            $this->setPassword();
+            if ($this->model->doLogIn($this->username, $this->password, "Logged in with cookie")) {
+                $this->setMessage();
+                $this->htmlView->echoHTML($this->view->showLoggedInPage());
+
+            }
+
+            else{
+                $this->view->setMessage("Wrong information in cookie");
+            }
+        }
+
 
     }
 
     public function doLogOut(){
-        if ($this->model->isLoggedIn()) {
+
             if ($this->view->didUserPressLogOut()) {
                 $this->model->doLogOut();
                 $this->setMessage();
             }
         }
-    }
+
 
     public function doLogIn(){
-
         //If not already logged in
         if (!$this->model->isLoggedIn()) {
             if ($this->view->didUserPressLogin()) {
                 $this->view->getAuthentication();
+                if($this->view->userHasCheckedKeepMeLoggedIn()){
+                    $msg = "logged in successfully and we will remember you next time";
+                }
+                else{
+                    $msg = "logged in successfully";
+                }
+
+
                 $this->setUsername();
                 $this->setPassword();
 
-                if ($this->model->doLogIn($this->username, $this->password)) {
+                if ($this->model->doLogIn($this->username, $this->password,$msg )) {
+                    $this->view->setCookie();
                     $this->setMessage();
                     $this->htmlView->echoHTML($this->view->showLoggedInPage());
+
+                    var_dump($this->view->getCookieExpireTime(), time()+36);
 
 
                 } else {

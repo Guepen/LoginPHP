@@ -7,12 +7,13 @@ class LoginModel{
     private $password = 'password';
     private $message;
 
+
     /**
      * @param $username
      * @param $password
      * @return bool true if user is authenticated, else false
      */
-    public function doLogIn($username, $password){
+    public function doLogIn($username, $password, $message){
         if (empty($_POST['username']) || empty($_POST['username']) && empty($_POST['password'])) {
             $this->message = 'missing username';
 
@@ -26,12 +27,13 @@ class LoginModel{
             $this->message = "username and/or password is wrong";
         }
 
-        else if ($username === $this->username && $password === $this->password) {
+        if ($username === $this->username && $password === $this->password) {
+
             if (isset($_SESSION['loggedIn']) == false) {
                 $_SESSION['loggedIn'] = $username;
             }
 
-            $this->message = "You have successfully logged in";
+            $this->message = $message;
 
             return true;
 

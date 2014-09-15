@@ -2,19 +2,23 @@
 
 require_once("HTMLView.php");
 require_once("./Model/LoginModel.php");
+require_once("./helper/CookieStorage.php");
 
 class LoginView{
 
     private $username;
     private $password;
     private $htmlView;
+    private $cookie;
     private $model;
     private $location = 'logOut';
-    private $message = '';
+    private $message;
+    private $cookieExpireTime;
 
     public function __construct(){
         $this->htmlView = new HTMLView();
         $this->model = new LoginModel();
+        $this->cookie = new CookieStorage();
     }
 
     /**
@@ -33,6 +37,7 @@ class LoginView{
 					<input value='$this->username' name='username' type=text size=20>
 					<label for=username>Password: </label>
 					<input name='password' type=password size=20>
+					<input type='checkbox' name='checkbox'> Keep me logged in
 					<input name='submit' type='submit' value='Login'>
 
 				</fieldset>
@@ -69,10 +74,41 @@ class LoginView{
         }
     }
 
+    public function userHasCheckedKeepMeLoggedIn(){
+        if(isset($_POST['checkbox'])){
+            return true;
+        }
+
+    }
+
 
     public function getAuthentication(){
+
         $this->username = $_POST['username'];
         $this->password = $_POST['password'];
+
+    }
+
+    public function setCookie(){
+        if (isset($_POST['checkbox'])) {
+            $this->cookieExpireTime = time()+3600;
+            var_dump($this->cookieExpireTime);
+            $pwd = base64_encode($this->password);
+            $this->cookie->save("username", $this->username);
+            $this->cookie->save("password", $pwd);
+        }
+
+    }
+
+    public function loadCookie(){
+        if (isset($_COOKIE['username'])) {
+            $cookieUser = $this->cookie->load("username");
+            $cookiePassword = $this->cookie->load("password");
+            $pwd = base64_decode($cookiePassword);
+
+            $this->username = $cookieUser;
+            $this->password = $pwd;
+        }
     }
 
     /**
@@ -92,6 +128,10 @@ class LoginView{
     public function setMessage($message){
         $this->message = $message;
 
+    }
+
+    public function getCookieExpireTime(){
+        return $this->cookieExpireTime;
     }
 
 }

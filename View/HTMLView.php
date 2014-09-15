@@ -2,8 +2,6 @@
 
 class HTMLView {
 
-    private $message;
-
     /**
      * @param $body HTML-code
      * @throws \Exception if $body is null
@@ -19,7 +17,7 @@ class HTMLView {
 				<!DOCTYPE html>
 				<html>
 				<head>
-				<meta charset='utf-8'></meta>
+				<meta charset='utf-8'>
 				</head>
 				<body>
 					$body
@@ -29,7 +27,4 @@ class HTMLView {
 
     }
 
-    public function getMessage(){
-
-    }
 }
