@@ -1,18 +1,20 @@
 <?php
 
 require_once("HTMLView.php");
+require_once("./Model/LoginModel.php");
 
 class LoginView{
 
     private $username;
     private $password;
     private $htmlView;
+    private $model;
     private $location = 'logOut';
     private $message = '';
-    private $feedback = 'You have successfully logged in!';
 
     public function __construct(){
         $this->htmlView = new HTMLView();
+        $this->model = new LoginModel();
     }
 
     /**
@@ -45,7 +47,7 @@ class LoginView{
      * @return string with html-code
      */
     public function showLoggedInPage(){
-        $this->username = $_SESSION['loggedIn'];
+        $this->username = $this->model->getUsername();
         $html = "<h1>Laborationskod th222fa<h1/>
             <H3>$this->username Logged In :)</H3>
             <p>$this->message</p>
@@ -54,9 +56,16 @@ class LoginView{
         return $html;
     }
 
-    public function logOut(){
+    public function didUserPressLogOut(){
         if(isset($_GET[$this->location])){
-            session_unset('loggedIn');
+            return true;
+        }
+
+    }
+
+    public function didUserPressLogin(){
+        if(isset($_POST['submit'])){
+            return true;
         }
     }
 
@@ -83,10 +92,6 @@ class LoginView{
     public function setMessage($message){
         $this->message = $message;
 
-    }
-
-    public function successfullLogin(){
-        $this->feedback = "You have successfully logged in";
     }
 
 }
