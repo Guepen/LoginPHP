@@ -52,8 +52,10 @@ class LoginModel{
     }
 
     public function doLogOut(){
-        $this->message = "Logged out";
-        session_unset("loggedIn");
+        if (isset($_SESSION['loggedIn'])) {
+            $this->message = "Logged out";
+            session_unset("loggedIn");
+        }
     }
 
     public function getMessage(){
@@ -70,10 +72,11 @@ class LoginModel{
         }
     }
 
-    public function checkUserAgent($ua2){
-
+    public function checkUserAgent($ua){
         if(isset($_SESSION['userAgent'])){
-            if($_SESSION['userAgent'] === $ua2){
+            //var_dump("model: checkUserAgent", $ua);
+            if($ua === $_SESSION['userAgent']){
+                var_dump("model: checkUserAgent: true");
             return true;
             }
         }
@@ -83,7 +86,12 @@ class LoginModel{
     public function setUserAgent($userAgent){
         if(isset($_SESSION['userAgent']) == false){
             $_SESSION['userAgent'] = $userAgent;
+            //var_dump("model: setUserAgent", $_SESSION['userAgent']);
         }
+    }
+
+    public function getUserAgent(){
+        return $_SESSION['userAgent'];
     }
 
 }

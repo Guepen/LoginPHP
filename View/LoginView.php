@@ -91,7 +91,7 @@ class LoginView{
 
     public function setCookie(){
         if (isset($_POST['checkbox'])) {
-            $this->cookieExpireTime = time()+60;
+            $this->cookieExpireTime = time()+200;
             $pwd = base64_encode($this->password);
             $this->cookie->save("username", $this->username, $this->cookieExpireTime);
             $this->cookie->save("password", $pwd, $this->cookieExpireTime);
