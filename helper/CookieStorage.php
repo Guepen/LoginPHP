@@ -3,8 +3,8 @@
 
 class CookieStorage {
 
-    public function save($name, $user){
-        setcookie($name, $user, time()+36);
+    public function save($name, $user, $expire){
+        setcookie($name, $user, $expire);
 
     }
 

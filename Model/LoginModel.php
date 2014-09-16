@@ -6,6 +6,8 @@ class LoginModel{
     private $username = 'Admin';
     private $password = 'password';
     private $message;
+    private $userAgent;
+    private $userAgent2;
 
 
     /**
@@ -60,6 +62,28 @@ class LoginModel{
 
     public function getUsername(){
         return $_SESSION['loggedIn'];
+    }
+
+    public function userAgentExists(){
+        if(isset($_SESSION['userAgent'])){
+            return true;
+        }
+    }
+
+    public function checkUserAgent($ua2){
+
+        if(isset($_SESSION['userAgent'])){
+            if($_SESSION['userAgent'] === $ua2){
+            return true;
+            }
+        }
+
+    }
+
+    public function setUserAgent($userAgent){
+        if(isset($_SESSION['userAgent']) == false){
+            $_SESSION['userAgent'] = $userAgent;
+        }
     }
 
 }

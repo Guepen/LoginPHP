@@ -91,11 +91,12 @@ class LoginView{
 
     public function setCookie(){
         if (isset($_POST['checkbox'])) {
-            $this->cookieExpireTime = time()+3600;
-            var_dump($this->cookieExpireTime);
+            $this->cookieExpireTime = time()+60;
             $pwd = base64_encode($this->password);
-            $this->cookie->save("username", $this->username);
-            $this->cookie->save("password", $pwd);
+            $this->cookie->save("username", $this->username, $this->cookieExpireTime);
+            $this->cookie->save("password", $pwd, $this->cookieExpireTime);
+
+            file_put_contents("expire.txt", $this->cookieExpireTime);
         }
 
     }
@@ -108,7 +109,14 @@ class LoginView{
 
             $this->username = $cookieUser;
             $this->password = $pwd;
+
+            return true;
         }
+    }
+
+    public function unsetCookies(){
+      $this->cookie->save("username", null, time()-1);
+        $this->cookie->save("password", null, time()-1);
     }
 
     /**
@@ -131,7 +139,8 @@ class LoginView{
     }
 
     public function getCookieExpireTime(){
-        return $this->cookieExpireTime;
+        //var_dump($this->cookieExpireTime);
+        return file_get_contents("expire.txt");
     }
 
 }
