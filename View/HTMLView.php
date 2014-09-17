@@ -10,7 +10,7 @@ class HTMLView {
         if($body == NULL){
             throw new \Exception("Body is null");
         }
-        setlocale(LC_TIME, "sve");
+        setlocale(LC_ALL, "sv_SE.utf8");
         $date = strftime("%A, den %#d %B %Y. Klockan är [%X]");
 
         echo "

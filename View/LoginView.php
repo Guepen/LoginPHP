@@ -8,10 +8,12 @@ class LoginView{
 
     private $username;
     private $password;
+    private $encryptedPassword;
     private $htmlView;
     private $cookie;
     private $model;
-    private $location = 'logOut';
+    private $controller;
+    private $logOutLocation = 'logOut';
     private $message;
     private $cookieExpireTime;
 
@@ -62,7 +64,7 @@ class LoginView{
     }
 
     public function didUserPressLogOut(){
-        if(isset($_GET[$this->location])){
+        if(isset($_GET[$this->logOutLocation])){
             return true;
         }
 
@@ -91,8 +93,10 @@ class LoginView{
 
     public function setCookie(){
         if (isset($_POST['checkbox'])) {
+
             $this->cookieExpireTime = time()+200;
-            $pwd = base64_encode($this->password);
+
+            $pwd = $this->getEncryptedPassword();
             $this->cookie->save("username", $this->username, $this->cookieExpireTime);
             $this->cookie->save("password", $pwd, $this->cookieExpireTime);
 
@@ -115,7 +119,7 @@ class LoginView{
     }
 
     public function unsetCookies(){
-      $this->cookie->save("username", null, time()-1);
+        $this->cookie->save("username", null, time()-1);
         $this->cookie->save("password", null, time()-1);
     }
 
@@ -138,9 +142,21 @@ class LoginView{
 
     }
 
+    public function getEncryptedPassword(){
+        return $this->encryptedPassword;
+    }
+
+    public function setEncryptedPassword($pwd){
+        $this->encryptedPassword = $pwd;
+
+    }
+
+
     public function getCookieExpireTime(){
         //var_dump($this->cookieExpireTime);
         return file_get_contents("expire.txt");
     }
+
+
 
 }

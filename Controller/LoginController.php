@@ -98,6 +98,7 @@ class LoginController{
                 if ($this->model->doLogIn($this->username, $this->password,$msg )) {
                     $userAgent = new UserAgent();
                     $this->userAgent = $userAgent->getUserAgent();
+                    $this->encryptPassword();
 
                     $this->loginView->setCookie();
                     $this->setMessage();
@@ -136,6 +137,10 @@ class LoginController{
         else{
             $this->htmlView->echoHTML($this->loginView->showLoginpage());
         }
+    }
+
+    public function encryptPassword(){
+       $this->loginView->setEncryptedPassword($this->model->encryptedPassword($this->loginView->getPassword()));
     }
 
     public function setMessage(){

@@ -94,4 +94,9 @@ class LoginModel{
         return $_SESSION['userAgent'];
     }
 
+    public function encryptedPassword($pwd){
+        var_dump($pwd);
+        return base64_encode($pwd);
+    }
+
 }
