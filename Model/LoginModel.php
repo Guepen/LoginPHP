@@ -5,36 +5,35 @@ require_once('./Controller/LoginController.php');
 class LoginModel{
     private $username = 'Admin';
     private $password = 'Password';
-    private $message;
+    private $messageId;
     private $cookieExpireTime;
 
     /**
      * @param $username
      * @param $password
-     * @param $message
+     * @param $messageId mixed if an error occurs the messageId will be set
      * @return bool true if user is authenticated, else false
      */
-    public function doLogIn($username, $password, $message){
+    public function doLogIn($username, $password, $messageId){
        if (empty($username) || empty($username) && empty($password)) {
-            $this->message = 'Användarnamn saknas';
+           $this->messageId = 0;
 
         }
         else if (empty($password)) {
-            $this->message = 'Lösenord saknas';
+            $this->messageId = 1;
 
         }
 
         else if($username !== $this->username || $password !== $this->password){
-            $this->message = "Felaktigt användarnamn och/eller lösenord";
+            $this->messageId = 2;
         }
 
         if ($username === $this->username && $password === $this->password) {
-
             if (isset($_SESSION['loggedIn']) == false) {
                 $_SESSION['loggedIn'] = $username;
             }
 
-            $this->message = $message;
+            $this->messageId = $messageId;
 
             return true;
 
@@ -44,6 +43,9 @@ class LoginModel{
 
     }
 
+    /**
+     * @return bool true if we have a session with the user, else false
+     */
     public function isLoggedIn(){
         if (isset($_SESSION['loggedIn'])){
             return true;
@@ -51,32 +53,45 @@ class LoginModel{
         return false;
     }
 
+    /**
+     * logs out the user
+     */
     public function doLogOut(){
         if (isset($_SESSION['loggedIn'])) {
-            $this->message = "Du är nu utloggad!";
+            $this->messageId = 7;
             session_unset("loggedIn");
         }
     }
 
+    /**
+     * @return mixed messageId
+     */
     public function getMessage(){
-        return $this->message;
+        return $this->messageId;
     }
 
+    /**
+     * sets the messageId
+     * @param $msgId
+     */
+    public function setMessage($msgId){
+        $this->messageId = $msgId;
+    }
+
+    /**
+     * @return mixed the username
+     */
     public function getUsername(){
         return $_SESSION['loggedIn'];
     }
 
-    public function userAgentExists(){
-        if(isset($_SESSION['userAgent'])){
-            return true;
-        }
-        return false;
-    }
-
+    /**
+     * @param $ua string containing user agent
+     * @return bool true if the user agent($ua) is the logged in user agent, else someone is trying to hack the session
+     */
     public function checkUserAgent($ua){
         if(isset($_SESSION['userAgent'])){
             if($ua === $_SESSION['userAgent']){
-                //var_dump("model: checkUserAgent: true");
             return true;
             }
         }
@@ -84,13 +99,20 @@ class LoginModel{
 
     }
 
+    /**
+     * if the user has logged in
+     * save his user agent in session
+     * @param $userAgent string containing the user agent
+     */
     public function setUserAgent($userAgent){
         if(isset($_SESSION['userAgent']) == false){
             $_SESSION['userAgent'] = $userAgent;
-            //var_dump("model: setUserAgent", $_SESSION['userAgent']);
         }
     }
 
+    /**
+     * @return mixed the saved user agent
+     */
     public function getUserAgent(){
         return $_SESSION['userAgent'];
     }

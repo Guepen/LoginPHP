@@ -13,8 +13,7 @@ class LoginView{
     private $cookie;
     private $model;
     private $cookiePassword;
-    private $logOutLocation = 'logOut';
-    private $message = "";
+    private $message;
     private $cookieExpireTime;
 
     public function __construct(){
@@ -27,93 +26,53 @@ class LoginView{
      * @return string with html-code
      */
     public function showLoginpage(){
-        if(!empty($this->message)){
-            $message = "
-            <div class='alert alert-info'>
-					<a href='#' class='close' data-dismiss='alert'>&times;</a>
-					<p>$this->message</p>
-					</div>
-
-            ";
-        }
-        else{
-            $message = "<p>$this->message<p>";
+        $username = "";
+        if(isset($_POST['submit'])){
+            $username = $this->username;
         }
 
         $html ="
-                   <h1 class='text-center'>Laborationskod th222fa</h1>
                    <H3>Ej Inloggad</H3>
                     <form action=?login class='form-horizontal' method=post enctype=multipart/form-data>
-                    <fieldset>
-					<legend>Login - skriv in användarnamn och lösenord</legend>
-					$message
-					<div class='form-group'>
-					<label class='col-sm-2 control-label' for=username>Användarnamn: </label>
-					<div class='col-sm-10'>
-					<input id='username' placeholder='skriv in ditt användarnamn' class='form-control' value='$this->username' name='username' type=text size=20 />
-					</div>
-					</div>
-					<div class='form-group'>
-					<label class='col-sm-2 control-label' for='password'>Lösenord: </label>
-					<div class='col-sm-10'>
-					<input id='password' placeholder='skriv in ditt lösenord' class='form-control' name='password' type=password size=20>
-					</div>
-					</div>
-				    <div class='form-group'>
-				    <div class='col-sm-offset-2 col-sm-10'>
-				    <div class='checkbox'>
-				    <label>
-					<input class='checkbox' type='checkbox' name='checkbox'/> Håll mig inloggad
-					</label>
-					</div>
-					</div>
-					</div>
-					<div class='form-group'>
-				    <div class='col-sm-offset-2 col-sm-10'>
-					<input class='btn btn-default' name='submit' type='submit' value='Logga in' />
-					</div>
-					</div>
-					</fieldset>
-			</form>
+                       <fieldset>
+					      <legend>Skriv in användarnamn och lösenord</legend>
+					      $this->message
+					      <div class='form-group'>
+					        <label class='col-sm-2 control-label' for=username>Användarnamn: </label>
+					        <div class='col-sm-10'>
+					          <input id='username' placeholder='Skriv in ditt användarnamn' class='form-control' value='$username' name='username' type=text size=20 />
+					        </div>
+					      </div>
+					      <div class='form-group'>
+					         <label class='col-sm-2 control-label' for='password'>Lösenord: </label>
+					         <div class='col-sm-10'>
+					           <input id='password' placeholder='Skriv in ditt lösenord' class='form-control' name='password' type=password size=20>
+					         </div>
+					      </div>
+				          <div class='form-group'>
+				             <div class='col-sm-offset-2 col-sm-10'>
+				               <div class='checkbox'>
+				                  <label>
+					              <input class='checkbox' type='checkbox' name='checkbox'/> Håll mig inloggad
+					              </label>
+					           </div>
+					         </div>
+					      </div>
+					     <div class='form-group'>
+				           <div class='col-sm-offset-2 col-sm-10'>
+					         <input class='btn btn-default' name='submit' type='submit' value='Logga in' />
+					       </div>
+					     </div>
+					   </fieldset>
+			       </form>
 
    ";
-
         return $html;
     }
 
     /**
-     * @return string with html-code
+     * @return bool true uf user has pressed login else false
      */
-    public function showLoggedInPage(){
-        if(!empty($this->message)){
-            $message = "
-            <div class='alert alert-info'>
-					<a href='#' class='close' data-dismiss='alert'>&times;</a>
-					<p>$this->message</p>
-					</div>
-
-            ";
-        }
-        else{
-            $message = "<p>$this->message<p>";
-        }
-        $this->username = $this->model->getUsername();
-        $html = "<h1>Laborationskod th222fa</h1>
-            <H3>$this->username är inloggad :)</H3>
-            $message
-            <a class='btn btn-default' name='logOut' href='?logOut'>sign out</a>
-    ";
-        return $html;
-    }
-
-    public function didUserPressLogOut(){
-        if(isset($_GET[$this->logOutLocation])){
-            return true;
-        }
-        return false;
-
-    }
-
     public function didUserPressLogin(){
         if(isset($_POST['submit'])){
             return true;
@@ -121,6 +80,9 @@ class LoginView{
         return false;
     }
 
+    /**
+     * @return bool true if user has checked remember me else false
+     */
     public function userHasCheckedKeepMeLoggedIn(){
         if(isset($_POST['checkbox'])){
             return true;
@@ -143,6 +105,9 @@ class LoginView{
 
     }
 
+    /**
+     * @return bool true if there is cookie to load, else false
+     */
     public function loadCookie(){
         if (isset($_COOKIE['username'])) {
             $cookieUser = $this->cookie->load("username");
@@ -154,9 +119,20 @@ class LoginView{
         return false;
     }
 
+    /**
+     * Delete cookies
+     */
     public function unsetCookies(){
         $this->cookie->save("username", null, time()-1);
         $this->cookie->save("password", null, time()-1);
+    }
+
+    /**
+     * @param $message string message with feedback
+     */
+    public function setMessage($message){
+        $this->message = $message;
+
     }
 
     /**
@@ -169,13 +145,9 @@ class LoginView{
     /**
      * @return string password
      */
+
     public function getPassword(){
         return $this->password;
-    }
-
-    public function setMessage($message){
-        $this->message = $message;
-
     }
 
     public function getEncryptedPassword(){
@@ -192,7 +164,6 @@ class LoginView{
     }
 
     public function setCookieExpireTime($expireTime){
-        //var_dump($expireTime);
         $this->cookieExpireTime = $expireTime;
     }
 

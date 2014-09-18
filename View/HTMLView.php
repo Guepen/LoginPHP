@@ -12,6 +12,7 @@ class HTMLView {
         }
         setlocale(LC_ALL, "sv_SE.utf8");
         $date = strftime("%A, den %#d %B %Y. Klockan är [%X]");
+        $date = ucfirst($date);
 
         echo "
 				<!DOCTYPE html>
@@ -28,6 +29,7 @@ class HTMLView {
 				</head>
 				<body>
 				 <div class='container'>
+				  <h1 class='text-center'>Laborationskod th222fa</h1>
 					$body
                     <p class='text-center'>$date</p>
                   </div>

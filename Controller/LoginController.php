@@ -1,14 +1,17 @@
 <?php
 
 require_once("./View/LoginView.php");
+require_once("./View/LoggedInView.php");
 require_once("./View/HTMLView.php");
+require_once("./View/Messages.php");
 require_once("./Model/LoginModel.php");
 require_once("./helper/UserAgent.php");
 
 
 class LoginController{
-    private $loginView;
     private $htmlView;
+    private $loggedInView;
+    private $loginView;
     private $model;
     private $username;
     private $password;
@@ -19,6 +22,7 @@ class LoginController{
     public function __construct(){
         $this->loginView = new LoginView();
         $this->htmlView = new HTMLView();
+        $this->loggedInView = new LoggedInView();
         $this->model = new LoginModel();
     }
 
@@ -34,12 +38,18 @@ class LoginController{
 
     }
 
+    /**
+     * test to login with cookie
+     */
     public function doLogInCookie(){
-        if (!$this->model->isLoggedIn() && !$this->loginView->didUserPressLogOut() && !$this->loginView->didUserPressLogin() && $this->loginView->loadCookie()) {
+        if (!$this->model->isLoggedIn() && !$this->loggedInView->didUserPressLogOut() && !$this->loginView->didUserPressLogin() && $this->loginView->loadCookie()) {
             if (time() < $this->model->getCookieExpireTimeFromfile()) {
                 $this->setUsername();
                 $this->setDecryptedPassword();
-                if ($this->model->doLogIn($this->username, $this->password, "Inloggning lyckades via cookies")) {
+                $msgId = 4;
+
+                //if user can log in with cookies
+                if ($this->model->doLogIn($this->username, $this->password, $msgId)) {
                     $userAgent = new UserAgent();
                     $this->userAgent = $userAgent->getUserAgent();
                     $this->model->setUserAgent($this->userAgent);
@@ -47,15 +57,20 @@ class LoginController{
                     $this->setMessage();
                     $this->showLoggedInPage = true;
                 }
+                //if the password or username in the cookie was wrong
                 else{
-
-                    $this->loginView->setMessage("Felaktig information i cookie");
+                    $msgId = 3;
+                    $this->model->setMessage($msgId);
+                    $this->setMessage();
                     $this->loginView->unsetCookies();
                 }
 
             }
+            //if the cookie had expired
             else{
-                $this->loginView->setMessage("Felaktig information i cookie");
+                $msgId = 3;
+                $this->model->setMessage($msgId);
+                $this->setMessage();
                 $this->loginView->unsetCookies();
 
             }
@@ -63,35 +78,39 @@ class LoginController{
 
     }
 
-
+    /**
+     * Checks if the user has pressed log out
+     */
     public function doLogOut(){
 
         if ($this->model->isLoggedIn()) {
-            if ($this->loginView->didUserPressLogOut()) {
+            if ($this->loggedInView->didUserPressLogOut()) {
                 $this->model->doLogOut();
                 $this->setMessage();
             }
         }
-        }
+    }
 
-
+    /**
+     * try to login
+     */
     public function doLogIn(){
         //If not already logged in
         if (!$this->model->isLoggedIn()) {
             if ($this->loginView->didUserPressLogin()) {
                 $this->loginView->getAuthentication();
                 if($this->loginView->userHasCheckedKeepMeLoggedIn()){
-                    $msg = "Inloggningen lyckades och vi kommer komma ihåg dig nästa gång";
+                    $msgId = 5;
                 }
                 else{
-                    $msg = "Inloggningen lyckades!";
+                    $msgId = 6;
                 }
-
 
                 $this->setUsername();
                 $this->setPassword();
 
-                if ($this->model->doLogIn($this->username, $this->password,$msg )) {
+                if ($this->model->doLogIn($this->username, $this->password,$msgId )) {
+                    $this->setMessage();
                     $userAgent = new UserAgent();
                     $this->userAgent = $userAgent->getUserAgent();
                     $this->encryptPassword();
@@ -99,7 +118,6 @@ class LoginController{
                     $this->getCookieExpireTime();
                     $this->model->writeCookieExpireTimeToFile();
                     $this->loginView->setCookie();
-                    $this->setMessage();
                     $this->model->setUserAgent($this->userAgent);
                     $this->showLoggedInPage = true;
 
@@ -114,20 +132,23 @@ class LoginController{
         }
     }
 
-
-
+    /**
+     * checks if we have logged in session and checks so the session isnt hacked
+     */
     public function isLoggedIn(){
-       $userAgent = new UserAgent();
-       $this->userAgent2 = $userAgent->getUserAgent();
+        $userAgent = new UserAgent();
+        $this->userAgent2 = $userAgent->getUserAgent();
         if($this->model->isLoggedIn() && $this->model->checkUserAgent($this->userAgent2)){
-            //var_dump("controller: isLoggedIn: true");
             $this->showLoggedInPage = true;
         }
     }
 
+    /**
+     * decides which view that should be rendered
+     */
     public function renderPage(){
         if($this->showLoggedInPage){
-            $this->htmlView->echoHTML($this->loginView->showLoggedInPage());
+            $this->htmlView->echoHTML($this->loggedInView->showLoggedInPage());
         }
         else{
             $this->htmlView->echoHTML($this->loginView->showLoginpage());
@@ -135,13 +156,18 @@ class LoginController{
     }
 
     public function encryptPassword(){
-       $this->loginView->setEncryptedPassword($this->model->encryptedPassword($this->loginView->getPassword()));
+        $this->loginView->setEncryptedPassword($this->model->encryptedPassword($this->loginView->getPassword()));
     }
 
     public function setMessage(){
-        $this->loginView->setMessage($this->model->getMessage());
+        $message = new Message($this->model->getMessage());
+        if (!$this->model->isLoggedIn()) {
+            $this->loginView->setMessage($message->getMessage());
+        }
+        else{
+            $this->loggedInView->setMessage($message->getMessage());
+        }
     }
-
 
     public function setUsername(){
         $this->username = $this->loginView->getUsername();
