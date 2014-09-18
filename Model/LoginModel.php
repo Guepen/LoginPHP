@@ -4,29 +4,28 @@ require_once('./Controller/LoginController.php');
 
 class LoginModel{
     private $username = 'Admin';
-    private $password = 'password';
+    private $password = 'Password';
     private $message;
-    private $userAgent;
-    private $userAgent2;
-
+    private $cookieExpireTime;
 
     /**
      * @param $username
      * @param $password
+     * @param $message
      * @return bool true if user is authenticated, else false
      */
     public function doLogIn($username, $password, $message){
-        if (empty($_POST['username']) || empty($_POST['username']) && empty($_POST['password'])) {
-            $this->message = 'missing username';
+       if (empty($username) || empty($username) && empty($password)) {
+            $this->message = 'Användarnamn saknas';
 
         }
-        else if (empty($_POST['password'])) {
-            $this->message = 'missing password';
+        else if (empty($password)) {
+            $this->message = 'Lösenord saknas';
 
         }
 
         else if($username !== $this->username || $password !== $this->password){
-            $this->message = "username and/or password is wrong";
+            $this->message = "Felaktigt användarnamn och/eller lösenord";
         }
 
         if ($username === $this->username && $password === $this->password) {
@@ -49,11 +48,12 @@ class LoginModel{
         if (isset($_SESSION['loggedIn'])){
             return true;
         }
+        return false;
     }
 
     public function doLogOut(){
         if (isset($_SESSION['loggedIn'])) {
-            $this->message = "Logged out";
+            $this->message = "Du är nu utloggad!";
             session_unset("loggedIn");
         }
     }
@@ -70,16 +70,17 @@ class LoginModel{
         if(isset($_SESSION['userAgent'])){
             return true;
         }
+        return false;
     }
 
     public function checkUserAgent($ua){
         if(isset($_SESSION['userAgent'])){
-            //var_dump("model: checkUserAgent", $ua);
             if($ua === $_SESSION['userAgent']){
-                var_dump("model: checkUserAgent: true");
+                //var_dump("model: checkUserAgent: true");
             return true;
             }
         }
+        return false;
 
     }
 
@@ -94,9 +95,28 @@ class LoginModel{
         return $_SESSION['userAgent'];
     }
 
+    public function setCookieExpireTime(){
+        $this->cookieExpireTime = time()+250;
+    }
+
+   public function getCookieExpireTime(){
+        return $this->cookieExpireTime;
+    }
+
     public function encryptedPassword($pwd){
-        var_dump($pwd);
         return base64_encode($pwd);
+    }
+
+    public function decryptPassword($pwd){
+        return base64_decode($pwd);
+    }
+
+    public function writeCookieExpireTimeToFile(){
+        file_put_contents("expire.txt", $this->cookieExpireTime);
+    }
+
+    public function getCookieExpireTimeFromFile(){
+        return file_get_contents("expire.txt");
     }
 
 }

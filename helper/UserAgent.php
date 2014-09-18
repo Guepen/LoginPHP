@@ -7,9 +7,6 @@ class UserAgent{
         $this->userAgent = $_SERVER['HTTP_USER_AGENT'];
     }
     public function getUserAgent(){
-
         return $this->userAgent;
-
-
     }
 }
