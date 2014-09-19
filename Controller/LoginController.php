@@ -3,9 +3,9 @@
 require_once("./View/LoginView.php");
 require_once("./View/LoggedInView.php");
 require_once("./View/HTMLView.php");
-require_once("./View/Messages.php");
+require_once("./View/Message.php");
 require_once("./Model/LoginModel.php");
-require_once("./helper/UserAgent.php");
+require_once("./Helper/UserAgent.php");
 
 
 class LoginController{
